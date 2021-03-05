@@ -1,3 +1,18 @@
-- Foi convencionado que os dados de meta dados do arquivo seriam:
-  I. Quantidade de IDs já cadastrados (ID máximo)
-  II. A posição em bytes do último caracter do arquivo, para evitar percorrer até EOF toda vez que for registar um novo registro.
+# CRUD Genérico para manipulação de arquivos - Class Comentarios :rocket:
+
+- CRUD feito para atender a manipulação de arquivos como memória externa
+
+1. Interface Registro
+  > A interface registro é responsável por criar um escopo
+  > para a futura manipulação de dos registros por outra classe.
+  
+  O método **toByteArray()** deve ser implementado pelas classes que implementam a interface registro,
+  essa é responsável por transformar um objeto em um vetor de bytes.
+  O método **fromByteArray(byte[] ba)** deve ser implementado pelas classes que implementam a interace registro,
+  essa é responsável por receber um vetor de bytes e transformar em um objeto.  
+  
+2. Estrutura dos Dados
+  > Os registros na memória externa - arquivo - são estruturados como uma **lista encadeada**.
+  > O ponteiro para o próximo registro é descrito por um valor inteiro (4 bytes) no final de cada registro.
+  
+4. 

@@ -11,12 +11,11 @@ public class Comentario implements Registro {
     private String title;
     private String body;
     private Date date;
-    private int likes;
 
     public Comentario() {
     }
 
-    public Comentario(int ID, String authorName, String title, String body, int likes) {
+    public Comentario(int ID, String authorName, String title, String body) {
         this.ID = ID;
         this.authorName = authorName;
         this.title = title;
@@ -52,5 +51,47 @@ public class Comentario implements Registro {
         this.title = dis.readUTF();
         this.body = dis.readUTF();
         this.date = new Date(dis.readLong());
+    }
+
+    public String toString(){
+        return ("==== Comentário ====\n" + 
+                "ID: "       + this.ID + "\n" + 
+                "Autor: "    + this.authorName + "\n" +
+                "Título: "   + this.title + "\n" + 
+                "Comentou: " + this.body + "\n" + 
+                "Data: "     + this.date + "\n"
+                );
+    }
+
+    public String getAuthorName() {
+        return authorName;
+    }
+
+    public void setAuthorName(String authorName) {
+        this.authorName = authorName;
+    }
+
+    public String getTitle() {
+        return title;
+    }
+
+    public void setTitle(String title) {
+        this.title = title;
+    }
+
+    public String getBody() {
+        return body;
+    }
+
+    public void setBody(String body) {
+        this.body = body;
+    }
+
+    public Date getDate() {
+        return date;
+    }
+
+    public void setDate(Date date) {
+        this.date = date;
     }
 }

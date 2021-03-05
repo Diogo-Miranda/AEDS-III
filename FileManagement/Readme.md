@@ -12,11 +12,11 @@
   essa é responsável por receber um vetor de bytes e transformar em um objeto.  
   
 2. Estrutura dos Registros
-  > Os registros na memória externa - arquivo - são estruturados como uma **lista encadeada**.
-  > O ponteiro para o próximo registro é descrito por um valor inteiro (4 bytes) no final de cada registro.
-  > Cada registro tem uma lápide de 1 byte que marca se o registro foi excluído. 0 - não excluído 1 - excluído
-  > Cada registro possuí um short indicando o tamanho do array de bytes seguintes
-  > O registro possuí então, o vetor de bytes relacionado ao objeto escrito
+  > * Os registros na memória externa - arquivo - são estruturados como uma **lista encadeada**.
+  > * O ponteiro para o próximo registro é descrito por um valor inteiro (4 bytes) no final de cada registro.
+  > * Cada registro tem uma lápide de 1 byte que marca se o registro foi excluído. 0 - não excluído 1 - excluído
+  > * Cada registro possuí um short indicando o tamanho do array de bytes seguintes
+  > * O registro possuí então, o vetor de bytes relacionado ao objeto escrito
  
   ![Estrutura de um Registro](EstruturaReg.png)
 

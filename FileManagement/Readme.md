@@ -11,8 +11,9 @@
   O método **fromByteArray(byte[] ba)** deve ser implementado pelas classes que implementam a interace registro,
   essa é responsável por receber um vetor de bytes e transformar em um objeto.  
   
-2. Estrutura dos Dados
+2. Estrutura dos Registros
   > Os registros na memória externa - arquivo - são estruturados como uma **lista encadeada**.
   > O ponteiro para o próximo registro é descrito por um valor inteiro (4 bytes) no final de cada registro.
-  
+  ![Estrutura de um Registro](EstruturaReg.png)
+
 4. 

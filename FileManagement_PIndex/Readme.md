@@ -1,4 +1,4 @@
-# CRUD Genérico para manipulação de arquivos - Class Comentarios :rocket:
+# CRUD Genérico para manipulação de arquivos com índice direto em ID - Class Comentarios :rocket:
 
 - CRUD feito para atender a manipulação de arquivos como memória externa
 - Os metadados do arquivo se resume em 1 inteiro armazenando o maior ID presente nos registros.
@@ -18,8 +18,6 @@
   > * O arquivo de índice guarda a informção <ID, Endereço> que é utilizada nas operações do CRUD
   > * O hash é feitro encima do atributo ID, pelo método **hashCode()**
   > * Na interface de RegistroHash, foi adicionado o método **getEndereco()**, que retorna o endereço no arquivo de dados do registro a partir do arquivo de índices.
- 
-  ![Estrutura de um Registro](EstruturaReg.png)
 
 3. Classe CRUD
   > Por sua vez, a classe CRUD possuí um construtor genérico que recebe o construtor o objeto a ser operado e também uma string

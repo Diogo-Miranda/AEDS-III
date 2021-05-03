@@ -870,7 +870,7 @@ public class ArvoreBMais_ChaveComposta_Int_Int {
         long raiz;
         arquivo.seek(0);
         raiz = arquivo.readLong();
-        System.out.println("Raiz: "+String.format("%04d", raiz));
+        System.out.println("Raiz: " + String.format("%04d", raiz));
         if (raiz != -1)
             print1(raiz);
         System.out.println();

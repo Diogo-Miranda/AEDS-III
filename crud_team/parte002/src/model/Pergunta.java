@@ -51,17 +51,16 @@ public class Pergunta implements Registro {
     public int getID() {
         return ID;
     }
-    
     public void setID(int ID) {
         this.ID = ID;
     }
 
     public int getIdUsuario() {
-        return idUsuario;
+        return this.idUsuario;
     }
 
     public void setIdUsuario(int idUsuario) {
-        this.idUsuario = idUsuario;
+        this.idUsuario = idUsuario; 
     }
 
     public long getCriacao() {
@@ -83,6 +82,7 @@ public class Pergunta implements Registro {
     public String getPergunta() {
         return pergunta;
     }
+
     public void setPergunta(String pergunta) {
         this.pergunta = pergunta;
     }

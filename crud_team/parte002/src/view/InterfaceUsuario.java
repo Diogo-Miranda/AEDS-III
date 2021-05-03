@@ -29,11 +29,45 @@ public class InterfaceUsuario {
 				pcvUsuario.class.getConstructor(String.class, int.class));
 	}
 
+	public void MenuPrincipalPerguntas() {
+		ImprimirMenuPrincipalPerguntas();
+		ler = new Scanner(System.in);
+		
+		String line; 
+		int opcao = 0;
+		try{
+			do {
+			line = ler.nextLine();
+			opcao = Integer.parseInt(line);
+				switch (opcao) {
+					case 1:
+						// Chamar Interface Criação de perguntas
+						break;
+					case 2:
+						// Chamar interface de consultar/responder perguntas
+						break;
+					case 3:
+						// Acessar notificações
+						break;
+					case 0:
+						System.out.println("Deslogando...");
+						break;
+					default:
+						System.out.println("Opçao inválida");
+						break;
+				}
+			} while(opcao != 0);
+ 		} catch (NumberFormatException nfe) {
+			nfe.printStackTrace();
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+	}
+
 	public void Menu() throws Exception {
 
 		ler = new Scanner(System.in);
 		do {
-			;
 			if (forcarEntrada) {
 				entrada = entradaForcada;
 				forcarEntrada = false;
@@ -66,6 +100,16 @@ public class InterfaceUsuario {
 
 		} while (!entrada.equals("0"));
 
+	}
+
+	public void ImprimirMenuPrincipalPerguntas() {
+		System.out.println("PERGUNTAS 1.0");
+		System.out.println("=============");
+		System.out.println("INÍCIO");	
+		System.out.println("1) Criação de perguntas");
+		System.out.println("2) Consultar/responder perguntas");
+		System.out.println("3) Notificações: 0");
+		System.out.println("0) Sair");
 	}
 
 	public void ImprimirMenu() {

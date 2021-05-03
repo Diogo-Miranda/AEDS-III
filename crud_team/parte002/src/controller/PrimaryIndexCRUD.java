@@ -21,8 +21,10 @@ public class PrimaryIndexCRUD<T extends Registro, T2 extends RegistroHashExtensi
         this.construtor = construtor;
         this.construtorIndexWithoutParams = construtorIndexWithoutParams;
         this.construtorIndexWithParams = construtorIndexWithParams;
-        he = new HashExtensivel<>(this.construtorIndexWithoutParams, 4, "./src/model/dados/direto.hash_d.db",
-                "./src/model/dados/direto.hash_c.db");
+
+        String hashD_Path = String.format("./src/model/dados/direto.%s.hash_d.db", construtor.getName());
+        String hashC_Path = String.format("./src/model/dados/direto.%s.hash_c.db", construtor.getName());
+        he = new HashExtensivel<>(this.construtorIndexWithoutParams, 4, hashD_Path, hashC_Path);
 
         // Abrir arquivo e realizar primeiro preenchimento
         arq = new RandomAccessFile(file, "rw");

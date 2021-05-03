@@ -16,6 +16,7 @@ public class PerguntaController extends PrimaryIndexCRUD<Pergunta, pcvDireto> {
             Constructor<pcvDireto> construtorIndexWithParams, String file)
             throws FileNotFoundException, IOException, Exception {
         super(construtor, construtorIndexWithoutParams, construtorIndexWithParams, file);
+        System.out.println("Construir Pergunta");
     }
 
     @Override
@@ -25,7 +26,7 @@ public class PerguntaController extends PrimaryIndexCRUD<Pergunta, pcvDireto> {
 
         idPergunta = super.create(objeto);
 
-        int idUsuario = objeto.getIDUsuario();
+        int idUsuario = objeto.getIdUsuario();
 
         // apenas inserir se o id for valido
         boolean createdArvore = false;

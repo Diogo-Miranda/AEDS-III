@@ -1,16 +1,23 @@
-import java.io.DataInputStream;
+package src.model;
 
-public class Pergunta {
+import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
+import java.io.DataInputStream;
+import java.io.DataOutputStream;
+import java.io.IOException;
+import src.controller.hash.*;
+
+public class Pergunta implements Registro {
     private int ID;
-    private int IDUsuario;
+    private int idUsuario;
     private long criacao;
     private short nota;
     private String pergunta;
     private boolean ativa;
 
-    public Pergunta(int iD, int iDUsuario, long criacao, short nota, String pergunta, boolean ativa) {
-        ID = iD;
-        IDUsuario = iDUsuario;
+    public Pergunta(int ID, int idUsuario, long criacao, short nota, String pergunta, boolean ativa) {
+        this.ID = ID;
+        this.idUsuario = idUsuario;
         this.criacao = criacao;
         this.nota = nota;
         this.pergunta = pergunta;
@@ -21,11 +28,11 @@ public class Pergunta {
         ByteArrayOutputStream baos = new ByteArrayOutputStream();
         DataOutputStream dos = new DataOutputStream(baos);
         dos.writeInt(this.ID);
-        dos.writeUTF(this.IDUsuario);
-        dos.writeUTF(this.criacao);
-        dos.writeUTF(this.nota);
+        dos.writeInt(this.idUsuario);
+        dos.writeLong(this.criacao);
+        dos.writeShort(this.nota);
         dos.writeUTF(this.pergunta);
-        dos.writeUTF(this.ativa);
+        dos.writeBoolean(this.ativa);
 
         return baos.toByteArray();
     }
@@ -34,7 +41,7 @@ public class Pergunta {
         ByteArrayInputStream bais = new ByteArrayInputStream(ba);
         DataInputStream dis = new DataInputStream(bais);
         this.ID = dis.readInt();
-        this.IDUsuario = dis.readInt();
+        this.idUsuario = dis.readInt();
         this.criacao = dis.readLong();
         this.nota = dis.readShort();
         this.pergunta = dis.readUTF();
@@ -45,16 +52,16 @@ public class Pergunta {
         return ID;
     }
     
-    public void setID(int iD) {
-        ID = iD;
+    public void setID(int ID) {
+        this.ID = ID;
     }
 
-    public int getIDUsuario() {
-        return IDUsuario;
+    public int getIdUsuario() {
+        return idUsuario;
     }
 
-    public void setIDUsuario(int iDUsuario) {
-        IDUsuario = iDUsuario;
+    public void setIdUsuario(int idUsuario) {
+        this.idUsuario = idUsuario;
     }
 
     public long getCriacao() {
@@ -86,5 +93,9 @@ public class Pergunta {
 
     public void setAtiva(boolean ativa) {
         this.ativa = ativa;
+    }
+
+    public String getEmail() {
+        return "";
     }
 }

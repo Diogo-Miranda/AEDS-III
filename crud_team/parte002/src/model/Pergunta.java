@@ -1,6 +1,13 @@
-import java.io.DataInputStream;
+package src.model;
 
-public class Pergunta {
+import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
+import java.io.DataInputStream;
+import java.io.DataOutputStream;
+import java.io.IOException;
+import src.controller.hash.*;
+
+public class Pergunta implements Registro {
     private int ID;
     private int idUsuario;
     private long criacao;
@@ -21,11 +28,11 @@ public class Pergunta {
         ByteArrayOutputStream baos = new ByteArrayOutputStream();
         DataOutputStream dos = new DataOutputStream(baos);
         dos.writeInt(this.ID);
-        dos.writeUTF(this.idUsuario);
-        dos.writeUTF(this.criacao);
-        dos.writeUTF(this.nota);
+        dos.writeInt(this.idUsuario);
+        dos.writeLong(this.criacao);
+        dos.writeShort(this.nota);
         dos.writeUTF(this.pergunta);
-        dos.writeUTF(this.ativa);
+        dos.writeBoolean(this.ativa);
 
         return baos.toByteArray();
     }
@@ -44,17 +51,16 @@ public class Pergunta {
     public int getID() {
         return ID;
     }
-
     public void setID(int ID) {
         this.ID = ID;
     }
 
-    public int getIDUsuario() {
-        return idUsuario;
+    public int getIdUsuario() {
+        return this.idUsuario;
     }
 
-    public void setIDUsuario(int idUsuario) {
-        this.idUsuario = idUsuario;
+    public void setIdUsuario(int idUsuario) {
+        this.idUsuario = idUsuario; 
     }
 
     public long getCriacao() {
@@ -87,5 +93,9 @@ public class Pergunta {
 
     public void setAtiva(boolean ativa) {
         this.ativa = ativa;
+    }
+
+    public String getEmail() {
+        return "";
     }
 }

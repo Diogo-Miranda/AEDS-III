@@ -15,6 +15,10 @@ public class Pergunta implements Registro {
     private String pergunta;
     private boolean ativa;
 
+    public Pergunta() {
+        this(-1, -1, -1, (short) -1, "", false);
+    }
+
     public Pergunta(int ID, int idUsuario, long criacao, short nota, String pergunta, boolean ativa) {
         this.ID = ID;
         this.idUsuario = idUsuario;
@@ -51,6 +55,7 @@ public class Pergunta implements Registro {
     public int getID() {
         return ID;
     }
+
     public void setID(int ID) {
         this.ID = ID;
     }
@@ -60,7 +65,7 @@ public class Pergunta implements Registro {
     }
 
     public void setIdUsuario(int idUsuario) {
-        this.idUsuario = idUsuario; 
+        this.idUsuario = idUsuario;
     }
 
     public long getCriacao() {

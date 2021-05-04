@@ -300,7 +300,7 @@ public class InterfaceUsuario {
 
 	}
 
-	public void Cadastro() throws Exception {
+	public boolean Cadastro() throws Exception {
 		print_user_info();
 
 		System.out.println("| Insira seu email:");

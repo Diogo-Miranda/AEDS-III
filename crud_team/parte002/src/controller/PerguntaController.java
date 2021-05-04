@@ -6,6 +6,8 @@ import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Scanner;
+
 
 import src.controller.arvorebplus.ArvoreBMais_ChaveComposta_Int_Int;
 import src.model.*;
@@ -52,6 +54,8 @@ public class PerguntaController extends PrimaryIndexCRUD<Pergunta, pcvDireto> {
 
         return idPergunta;
     }
+
+   
 
     public List<Pergunta> readAll(int idUsuario)
             throws InstantiationException, IllegalAccessException, InvocationTargetException, Exception {

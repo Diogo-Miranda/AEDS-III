@@ -98,57 +98,19 @@ public class InterfaceUsuario {
 						break;
 					case 2:
 						// Incluir pergunta
-						// Solicitar a descrição da pergunta;
-						// Se a pergunta estiver em branco, retornar ao menu de criação de perguntas;
-						// Solicitar a confirmação da inclusão da nova pergunta;
-						// Se o usuário não confirmar a inclusão, voltar ao menu de criação de
-						// perguntas;
-						// Incluir a pergunta no arquivo, por meio do método create(), usando o texto da
-						// pergunta, a data/hora da criação, a nota e o ID do usuário;
-						// O método retornará o ID da nova pergunta;
-						// Incluir o par ID do usuário e ID da pergunta na árvore B+ do relacionamento.
+
 						IncluirPergunta();
 
 						break;
 					case 3:
 						// Alterar pergunta
-						// Obter a lista de IDs de perguntas na Árvore B+ usando o ID do usuário;
-						// Para cada ID nessa lista,
-						// Obter os dados da pergunta usando o método read(ID) do CRUD;
-						// Se a pergunta estiver ativa, apresentar os seus dados na tela.
-						// Solicitar do usuário o número da pergunta que deseja alterar;
-						// Se o usuário digitar 0, retornar ao menu de perguntas;
-						// Usando o ID da pergunta escolhida, recuperar os dados da pergunta usando o
-						// método read(ID) do CRUD;
-						// Apresentar os dados da pergunta na tela;
-						// Solicitar a nova redação da pergunta ;
-						// Se o usuário deixar esse campo em branco, retornar ao menu de perguntas;
-						// Solicitar a confirmação de alteração ao usuário;
-						// Se o usuário não confirmar a alteração, voltar ao menu de perguntas;
-						// Alterar os dados da pergunta por meio do método update() do CRUD;
-						// Apresentar mensagem de confirmação da alteração;
-						// Voltar ao menu de perguntas.
+
 						AlterarPergunta();
 						break;
 
 					case 4:
 						// Arquivar pergunta
-						// Obter a lista de IDs de perguntas na Árvore B+ usando o ID do usuário;
-						// Para cada ID nessa lista,
-						// Obter os dados da pergunta usando o método read(ID) do CRUD;
-						// Se a pergunta estiver ativa, apresentar os seus dados na tela.
-						// Solicitar do usuário o número da pergunta que deseja arquivar;
-						// Se o usuário digitar 0, retornar ao menu de perguntas;
-						// Usando o ID da pergunta escolhida, recuperar os dados da pergunta usando o
-						// método read(ID) do CRUD;
-						// Apresentar os dados da pergunta na tela;
-						// Solicitar a confirmação de arquivamento ao usuário;
-						// Se o usuário não confirmar o arquivamento, voltar ao menu de perguntas;
-						// Arquivar a pergunta por meio do método update() do CRUD, mudando apenas o
-						// valor do atributo ativa para false.
-						// Apresentar mensagem de confirmação do arquivamento;
-						// Voltar ao menu de perguntas.
-						ListarPerguntas();
+
 						ArquivarPergunta();
 						break;
 					case 0:
@@ -275,54 +237,66 @@ public class InterfaceUsuario {
 		return isLogin;
 	}
 
-	
-	public void ArquivarPergunta() throws InstantiationException, IllegalAccessException, 
-		InvocationTargetException, Exception {
+	public void ArquivarPergunta()
+			throws InstantiationException, IllegalAccessException, InvocationTargetException, Exception {
 		ler = new Scanner(System.in);
+		List<Pergunta> perguntas = ListarPerguntas();
 		System.out.println("| Informe o ID da pergunta a ser arquivada: ");
 		System.out.println("| 0 - Sair");
 		System.out.print("\t-> ");
-		int option = Integer.parseInt(ler.nextLine());
+		int arrayIndex = Integer.parseInt(ler.nextLine()) - 1;
 
-		if(option == 0) {
-			int idPergunta = option;
+		Pergunta pergunta = null;
+
+		try {
+			pergunta = perguntas.get(arrayIndex);
+		} catch (Exception e) {
+			return;
+		}
+
+		if (pergunta != null) {
+			int idPergunta = pergunta.getID();
 			boolean success = perguntaController.archiving(idPergunta);
 
-			if(success) {
+			if (success) {
 				System.out.println("| Pergunta arquivada com sucesso!");
 			} else {
 				System.out.println("| Ocorreu algum erro ao arquivar a pergunta!");
 			}
 		}
 	}
-	public void ListarPerguntas()
+
+	public List<Pergunta> ListarPerguntas()
 			throws InstantiationException, IllegalAccessException, InvocationTargetException, Exception {
 		System.out.println("MINHAS PERGUNTAS");
 		List<Pergunta> minhasPerguntas = perguntaController.readAll(idUsuario);
 
 		for (Pergunta pergunta : minhasPerguntas) {
 			String isArquivado = (pergunta.isAtiva() ? "" : "(Arquivada)");
-			System.out.println(String.format("\n%d. %s", pergunta.getID(), isArquivado));
+			System.out.println(String.format("\n%d. %s", minhasPerguntas.indexOf(pergunta) + 1, isArquivado));
 			System.out.println(pergunta.getCriacaoString());
 			System.out.println(pergunta.getPergunta());
 		}
-		// System.out.println("\n\nPressione qualquer tecla para continuar...");
-		// ler.nextLine();
 
-		return;
+		return minhasPerguntas;
 	}
 
 	public void AlterarPergunta()
 			throws InstantiationException, IllegalAccessException, InvocationTargetException, Exception {
-		ListarPerguntas();
+		List<Pergunta> perguntas = ListarPerguntas();
 		System.out.println("| Escolha o ID da pergunta:");
-		int id = Integer.parseInt(ler.nextLine());
-		if (id == 0) {
-			// id 0 return ao menu
+
+		int arrayIndex = Integer.parseInt(ler.nextLine()) - 1;
+		if (arrayIndex == -1) {
 			return;
 		}
-		// imprimir a pergunta na tela
-		Pergunta pergunta = perguntaController.read(id);
+
+		Pergunta pergunta = null;
+		try {
+			pergunta = perguntas.get(arrayIndex);
+		} catch (Exception e) {
+			return;
+		}
 
 		// Assegurar a scopo de pergunta
 		if (pergunta.getIdUsuario() == idUsuario) {

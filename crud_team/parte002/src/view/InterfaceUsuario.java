@@ -97,20 +97,14 @@ public class InterfaceUsuario {
 						ler.nextLine();
 						break;
 					case 2:
-						// Incluir pergunta
-
 						IncluirPergunta();
 
 						break;
 					case 3:
-						// Alterar pergunta
-
 						AlterarPergunta();
 						break;
 
 					case 4:
-						// Arquivar pergunta
-
 						ArquivarPergunta();
 						break;
 					case 0:
@@ -253,11 +247,15 @@ public class InterfaceUsuario {
 		} catch (Exception e) {
 			return;
 		}
-
-		if (pergunta != null) {
+    
+     boolean success = false;
+		if (pergunta != null && pergunta.isAtiva() == true) {
 			int idPergunta = pergunta.getID();
-			boolean success = perguntaController.archiving(idPergunta);
-
+      
+      if(pergunta.getIdUsuario() == idUsuario) {
+			  boolean success = perguntaController.archiving(idPergunta);
+      }
+      
 			if (success) {
 				System.out.println("| Pergunta arquivada com sucesso!");
 			} else {
@@ -267,6 +265,7 @@ public class InterfaceUsuario {
 	}
 
 	public List<Pergunta> ListarPerguntas()
+
 			throws InstantiationException, IllegalAccessException, InvocationTargetException, Exception {
 		System.out.println("MINHAS PERGUNTAS");
 		List<Pergunta> minhasPerguntas = perguntaController.readAll(idUsuario);

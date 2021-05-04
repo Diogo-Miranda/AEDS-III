@@ -284,10 +284,13 @@ public class InterfaceUsuario {
 		System.out.print("\t-> ");
 		int option = Integer.parseInt(ler.nextLine());
 
-		if(option == 0) {
+		if(option != 0) {
 			int idPergunta = option;
-			boolean success = perguntaController.archiving(idPergunta);
-
+			Pergunta pergunta = perguntaController.read(idPergunta);
+			boolean success = false;
+			if(pergunta.getIdUsuario() == idUsuario) {
+				success = perguntaController.archiving(idPergunta);
+			}
 			if(success) {
 				System.out.println("| Pergunta arquivada com sucesso!");
 			} else {

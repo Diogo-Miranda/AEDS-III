@@ -200,28 +200,28 @@ public class InterfaceUsuario {
 	}
 
 	public void ImprimirMenuPrincipalPerguntas() {
-		System.out.println("\nPERGUNTAS 1.0");
-		System.out.println("=============");
+		System.out.println("\n----------------\nPerguntas 1.0\n----------------\n");
 		System.out.println("INÍCIO");
-		System.out.println("1) Criação de perguntas");
-		System.out.println("2) Consultar/responder perguntas");
-		System.out.println("3) Notificações: 0");
-		System.out.println("0) Sair");
+		System.out.println("\t1) Criação de perguntas");
+		System.out.println("\t2) Consultar/responder perguntas");
+		System.out.println("\t3) Notificações: 0");
+		System.out.println("\t0) Sair");
+		System.out.print("\t-> ");
 	}
 
 	public void ImprimirMenuCriacaoPerguntas() {
-		System.out.println("\nPERGUNTAS 1.0");
-		System.out.println("=============");
+		System.out.println("\n----------------\nPerguntas 1.0\n----------------\n");
 		System.out.println("INÍCIO > CRIAÇÃO DE PERGUNTAS");
-		System.out.println("1) Listar");
-		System.out.println("2) Incluir");
-		System.out.println("3) Alterar");
-		System.out.println("4) Arquivar");
-		System.out.println("0) Retornar ao menu anterior");
+		System.out.println("\t1) Listar");
+		System.out.println("\t2) Incluir");
+		System.out.println("\t3) Alterar");
+		System.out.println("\t4) Arquivar");
+		System.out.println("\t0) Retornar ao menu anterior");
+		System.out.print("\t-> ");
 	}
 
 	public void ImprimirMenu() {
-		System.out.println("\n=============\nMenu\n=============\n");
+		System.out.println("\n----------------\nMenu\n----------------\n");
 		System.out.println("| Acesso:\n");
 		System.out.println("\t1 - Acesso ao Sistema");
 		System.out.println("\t2 - Novo usuário(primeiro acesso)\n");
@@ -273,13 +273,20 @@ public class InterfaceUsuario {
 	public void ArquivarPergunta() throws InstantiationException, IllegalAccessException, 
 		InvocationTargetException, Exception {
 		ler = new Scanner(System.in);
-		System.out.println("Informe o ID da pergunta a ser arquivada: ");
-		int idPergunta = Integer.parseInt(ler.nextLine());
-		boolean success = perguntaController.archiving(idPergunta);
-		if(success) {
-			System.out.println("Pergunta arquivada com sucesso!");
-		} else {
-			System.out.println("Ocorreu algum erro ao arquivar a pergunta!");
+		System.out.println("| Informe o ID da pergunta a ser arquivada: ");
+		System.out.println("| 0 - Sair");
+		System.out.print("\t-> ");
+		int option = Integer.parseInt(ler.nextLine());
+
+		if(option == 0) {
+			int idPergunta = option;
+			boolean success = perguntaController.archiving(idPergunta);
+
+			if(success) {
+				System.out.println("| Pergunta arquivada com sucesso!");
+			} else {
+				System.out.println("| Ocorreu algum erro ao arquivar a pergunta!");
+			}
 		}
 	}
 

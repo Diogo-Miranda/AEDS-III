@@ -3,6 +3,8 @@ package src.view;
 import java.util.List;
 import java.util.Scanner;
 import java.io.File;
+import java.lang.reflect.InvocationTargetException;
+
 import src.model.*;
 import src.controller.*;
 
@@ -89,30 +91,58 @@ public class InterfaceUsuario {
 				switch (opcao) {
 					case 1:
 						// Listar perguntas
-						System.out.println("MINHAS PERGUNTAS");
-						List<Pergunta> minhasPerguntas = perguntaController.readAll(idUsuario);
-
-						for (Pergunta pergunta : minhasPerguntas) {
-							System.out.println(String.format("\n%d.", pergunta.getID()));
-							System.out.println(pergunta.getCriacaoString());
-							System.out.println(pergunta.getPergunta());
-						}
-
-						System.out.println("\n\nPressione qualquer tecla para continuar...");
-						ler.nextLine();
-
+						ListarPerguntas();
 						break;
 					case 2:
 						// Incluir pergunta
+						// Solicitar a descrição da pergunta;
+						// Se a pergunta estiver em branco, retornar ao menu de criação de perguntas;
+						// Solicitar a confirmação da inclusão da nova pergunta;
+						// Se o usuário não confirmar a inclusão, voltar ao menu de criação de
+						// perguntas;
+						// Incluir a pergunta no arquivo, por meio do método create(), usando o texto da
+						// pergunta, a data/hora da criação, a nota e o ID do usuário;
+						// O método retornará o ID da nova pergunta;
+						// Incluir o par ID do usuário e ID da pergunta na árvore B+ do relacionamento.
 						IncluirPergunta();
 						break;
 					case 3:
 						// Alterar pergunta
+						// Obter a lista de IDs de perguntas na Árvore B+ usando o ID do usuário;
+						// Para cada ID nessa lista,
+						// Obter os dados da pergunta usando o método read(ID) do CRUD;
+						// Se a pergunta estiver ativa, apresentar os seus dados na tela.
+						// Solicitar do usuário o número da pergunta que deseja alterar;
+						// Se o usuário digitar 0, retornar ao menu de perguntas;
+						// Usando o ID da pergunta escolhida, recuperar os dados da pergunta usando o
+						// método read(ID) do CRUD;
+						// Apresentar os dados da pergunta na tela;
+						// Solicitar a nova redação da pergunta ;
+						// Se o usuário deixar esse campo em branco, retornar ao menu de perguntas;
+						// Solicitar a confirmação de alteração ao usuário;
+						// Se o usuário não confirmar a alteração, voltar ao menu de perguntas;
+						// Alterar os dados da pergunta por meio do método update() do CRUD;
+						// Apresentar mensagem de confirmação da alteração;
+						// Voltar ao menu de perguntas.
 						break;
 
 					case 4:
 						// Arquivar pergunta
-
+						// Obter a lista de IDs de perguntas na Árvore B+ usando o ID do usuário;
+						// Para cada ID nessa lista,
+						// Obter os dados da pergunta usando o método read(ID) do CRUD;
+						// Se a pergunta estiver ativa, apresentar os seus dados na tela.
+						// Solicitar do usuário o número da pergunta que deseja arquivar;
+						// Se o usuário digitar 0, retornar ao menu de perguntas;
+						// Usando o ID da pergunta escolhida, recuperar os dados da pergunta usando o
+						// método read(ID) do CRUD;
+						// Apresentar os dados da pergunta na tela;
+						// Solicitar a confirmação de arquivamento ao usuário;
+						// Se o usuário não confirmar o arquivamento, voltar ao menu de perguntas;
+						// Arquivar a pergunta por meio do método update() do CRUD, mudando apenas o
+						// valor do atributo ativa para false.
+						// Apresentar mensagem de confirmação do arquivamento;
+						// Voltar ao menu de perguntas.
 						break;
 					case 0:
 						System.out.println("Retornando...");
@@ -235,6 +265,23 @@ public class InterfaceUsuario {
 			System.out.println("| ERRO: Email não cadastrado.");
 			return;
 		}
+
+	}
+
+	public void ListarPerguntas()
+			throws InstantiationException, IllegalAccessException, InvocationTargetException, Exception {
+		System.out.println("MINHAS PERGUNTAS");
+		List<Pergunta> minhasPerguntas = perguntaController.readAll(idUsuario);
+
+		for (Pergunta pergunta : minhasPerguntas) {
+			String isArquivado = (pergunta.isAtiva() ? "" : "(Arquivada)");
+			System.out.println(String.format("\n%d. %s", pergunta.getID(), isArquivado));
+			System.out.println(pergunta.getCriacaoString());
+			System.out.println(pergunta.getPergunta());
+		}
+
+		System.out.println("\n\nPressione qualquer tecla para continuar...");
+		ler.nextLine();
 
 	}
 

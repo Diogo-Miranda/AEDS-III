@@ -5,6 +5,10 @@ import java.io.ByteArrayOutputStream;
 import java.io.DataInputStream;
 import java.io.DataOutputStream;
 import java.io.IOException;
+import java.text.DateFormat;
+import java.util.Calendar;
+import java.util.Date;
+
 import src.controller.hash.*;
 
 public class Pergunta implements Registro {
@@ -17,6 +21,10 @@ public class Pergunta implements Registro {
 
     public Pergunta() {
         this(-1, -1, -1, (short) -1, "", false);
+    }
+
+    public Pergunta(int idUsuario, String pergunta) {
+        this(-1, idUsuario, Calendar.getInstance().getTime().getTime(), (short) -1, pergunta, true);
     }
 
     public Pergunta(int ID, int idUsuario, long criacao, short nota, String pergunta, boolean ativa) {
@@ -102,5 +110,19 @@ public class Pergunta implements Registro {
 
     public String getEmail() {
         return "";
+    }
+
+    public String getCriacaoString() {
+        Date criacaoDate = new Date(criacao);
+        return DateFormat.getInstance().format(criacaoDate);
+    }
+
+    @Override
+    public String toString() {
+
+        return String.format("\nID: %d \nID Usuario: %d \nCriação: %s \nPergunta: %s\nNota: %d \nAtiva: %b",
+                this.getID(), this.getIdUsuario(), getCriacaoString(), this.getPergunta(), this.getNota(),
+                this.isAtiva());
+
     }
 }

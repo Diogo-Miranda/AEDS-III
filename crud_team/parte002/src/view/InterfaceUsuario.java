@@ -1,5 +1,6 @@
 package src.view;
 
+import java.util.List;
 import java.util.Scanner;
 import java.io.File;
 import src.model.*;
@@ -15,11 +16,14 @@ public class InterfaceUsuario {
 	private String senha;
 	private PrimaryIndexCRUD<Usuario, pcvDireto> arqUsuario;
 	private SecondaryIndexCRUD<pcvUsuario> secondaryIndex;
+	private PerguntaController perguntaController;
 
-	String entrada;
-	boolean forcarEntrada = false;
-	String entradaForcada = "";
-	String confirmar;
+	private String entrada;
+	private boolean forcarEntrada = false;
+	private String entradaForcada = "";
+	private String confirmar;
+
+	private int idUsuario = -1;
 
 	public InterfaceUsuario() throws Exception {
 		arqUsuario = new PrimaryIndexCRUD<Usuario, pcvDireto>(Usuario.class.getConstructor(),
@@ -27,37 +31,98 @@ public class InterfaceUsuario {
 				DATA_FOLDER + "usuario.db");
 		secondaryIndex = new SecondaryIndexCRUD<pcvUsuario>(pcvUsuario.class.getConstructor(),
 				pcvUsuario.class.getConstructor(String.class, int.class));
+
+		perguntaController = new PerguntaController(DATA_FOLDER + "pergunta.db", 100,
+				DATA_FOLDER + "perguntaArvore.db");
 	}
 
 	public void MenuPrincipalPerguntas() {
-		ImprimirMenuPrincipalPerguntas();
 		ler = new Scanner(System.in);
-		
-		String line; 
+
+		String line;
 		int opcao = 0;
-		try{
+		try {
 			do {
-			line = ler.nextLine();
-			opcao = Integer.parseInt(line);
+				ImprimirMenuPrincipalPerguntas();
+				line = ler.nextLine();
+				opcao = Integer.parseInt(line);
 				switch (opcao) {
 					case 1:
 						// Chamar Interface Criação de perguntas
+						System.out.println("Criando Pergunta...");
+						MenuCriacaoPerguntas();
 						break;
 					case 2:
 						// Chamar interface de consultar/responder perguntas
+						System.out.println("Consultando...");
+
 						break;
 					case 3:
 						// Acessar notificações
 						break;
 					case 0:
 						System.out.println("Deslogando...");
+						idUsuario = -1;
 						break;
 					default:
 						System.out.println("Opçao inválida");
 						break;
 				}
-			} while(opcao != 0);
- 		} catch (NumberFormatException nfe) {
+			} while (opcao != 0);
+		} catch (NumberFormatException nfe) {
+			nfe.printStackTrace();
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+	}
+
+	public void MenuCriacaoPerguntas() {
+		ler = new Scanner(System.in);
+
+		String line;
+		int opcao = 0;
+		try {
+			do {
+				ImprimirMenuCriacaoPerguntas();
+				line = ler.nextLine();
+				opcao = Integer.parseInt(line);
+				switch (opcao) {
+					case 1:
+						// Listar perguntas
+						System.out.println("MINHAS PERGUNTAS");
+						List<Pergunta> minhasPerguntas = perguntaController.readAll(idUsuario);
+
+						for (Pergunta pergunta : minhasPerguntas) {
+							System.out.println(String.format("\n%d.", pergunta.getID()));
+							System.out.println(pergunta.getCriacaoString());
+							System.out.println(pergunta.getPergunta());
+						}
+
+						System.out.println("\n\nPressione qualquer tecla para continuar...");
+						ler.nextLine();
+
+						break;
+					case 2:
+						// Incluir pergunta
+						IncluirPergunta();
+						break;
+					case 3:
+						// Alterar pergunta
+						break;
+
+					case 4:
+						// Arquivar pergunta
+
+						break;
+					case 0:
+						System.out.println("Retornando...");
+						break;
+					default:
+						System.out.println("Opçao inválida");
+						break;
+				}
+			} while (opcao != 0);
+		} catch (NumberFormatException nfe) {
 			nfe.printStackTrace();
 		} catch (Exception e) {
 			e.printStackTrace();
@@ -73,7 +138,7 @@ public class InterfaceUsuario {
 				forcarEntrada = false;
 			} else {
 				ImprimirMenu();
-				
+
 				System.out.println("\n| Opção: ");
 				System.out.print("\t-> ");
 				entrada = ler.nextLine();
@@ -81,21 +146,21 @@ public class InterfaceUsuario {
 			}
 
 			switch (entrada) {
-			case "1":
-				Login();
-				break;
+				case "1":
+					Login();
+					break;
 
-			case "2":
-				Cadastro();
-				break;
+				case "2":
+					Cadastro();
+					break;
 
-			case "0":
-				System.out.println("| Fim do programa.");
-				break;
+				case "0":
+					System.out.println("| Fim do programa.");
+					break;
 
-			default:
-				System.out.println("| Entrada Invalida.");
-				break;
+				default:
+					System.out.println("| Entrada Invalida.");
+					break;
 			}
 
 		} while (!entrada.equals("0"));
@@ -105,11 +170,22 @@ public class InterfaceUsuario {
 	public void ImprimirMenuPrincipalPerguntas() {
 		System.out.println("PERGUNTAS 1.0");
 		System.out.println("=============");
-		System.out.println("INÍCIO");	
+		System.out.println("INÍCIO");
 		System.out.println("1) Criação de perguntas");
 		System.out.println("2) Consultar/responder perguntas");
 		System.out.println("3) Notificações: 0");
 		System.out.println("0) Sair");
+	}
+
+	public void ImprimirMenuCriacaoPerguntas() {
+		System.out.println("PERGUNTAS 1.0");
+		System.out.println("=============");
+		System.out.println("INÍCIO > CRIAÇÃO DE PERGUNTAS");
+		System.out.println("1) Listar");
+		System.out.println("2) Incluir");
+		System.out.println("3) Alterar");
+		System.out.println("4) Arquivar");
+		System.out.println("0) Retornar ao menu anterior");
 	}
 
 	public void ImprimirMenu() {
@@ -144,10 +220,12 @@ public class InterfaceUsuario {
 			System.out.println("| Insira sua senha: ");
 			System.out.print("\t-> ");
 			senha = ler.nextLine();
-            
+
 			if (user.getSenha() == senha.hashCode()) {
 				// Senha correta
 				System.out.println("| Acesso garantido -> tela principal.");
+				idUsuario = user.getID();
+				MenuPrincipalPerguntas();
 
 			} else {
 				System.out.println("| ERRO: senha incorreta.");
@@ -157,6 +235,21 @@ public class InterfaceUsuario {
 			System.out.println("| ERRO: Email não cadastrado.");
 			return;
 		}
+
+	}
+
+	public void IncluirPergunta() throws Exception {
+
+		System.out.println("| Insira sua pergunta:");
+		System.out.print("\t-> ");
+		Pergunta pergunta = new Pergunta(idUsuario, ler.nextLine());
+
+		if (pergunta.getPergunta().isEmpty())
+			return;
+
+		perguntaController.create(pergunta);
+
+		return;
 
 	}
 

@@ -143,6 +143,8 @@ public class InterfaceUsuario {
 						// valor do atributo ativa para false.
 						// Apresentar mensagem de confirmação do arquivamento;
 						// Voltar ao menu de perguntas.
+						ListarPerguntas();
+						ArquivarPergunta();
 						break;
 					case 0:
 						System.out.println("Retornando...");
@@ -198,7 +200,7 @@ public class InterfaceUsuario {
 	}
 
 	public void ImprimirMenuPrincipalPerguntas() {
-		System.out.println("PERGUNTAS 1.0");
+		System.out.println("\nPERGUNTAS 1.0");
 		System.out.println("=============");
 		System.out.println("INÍCIO");
 		System.out.println("1) Criação de perguntas");
@@ -208,7 +210,7 @@ public class InterfaceUsuario {
 	}
 
 	public void ImprimirMenuCriacaoPerguntas() {
-		System.out.println("PERGUNTAS 1.0");
+		System.out.println("\nPERGUNTAS 1.0");
 		System.out.println("=============");
 		System.out.println("INÍCIO > CRIAÇÃO DE PERGUNTAS");
 		System.out.println("1) Listar");
@@ -267,7 +269,20 @@ public class InterfaceUsuario {
 		
 		return isLogin;
 	}
-  
+	
+	public void ArquivarPergunta() throws InstantiationException, IllegalAccessException, 
+		InvocationTargetException, Exception {
+		ler = new Scanner(System.in);
+		System.out.println("Informe o ID da pergunta a ser arquivada: ");
+		int idPergunta = Integer.parseInt(ler.nextLine());
+		boolean success = perguntaController.archiving(idPergunta);
+		if(success) {
+			System.out.println("Pergunta arquivada com sucesso!");
+		} else {
+			System.out.println("Ocorreu algum erro ao arquivar a pergunta!");
+		}
+	}
+
 	public void ListarPerguntas()
 			throws InstantiationException, IllegalAccessException, InvocationTargetException, Exception {
 		System.out.println("MINHAS PERGUNTAS");
@@ -280,8 +295,8 @@ public class InterfaceUsuario {
 			System.out.println(pergunta.getPergunta());
 		}
 
-		System.out.println("\n\nPressione qualquer tecla para continuar...");
-		ler.nextLine();
+		// System.out.println("\n\nPressione qualquer tecla para continuar...");
+		// ler.nextLine();
 
 	}
 

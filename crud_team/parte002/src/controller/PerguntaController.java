@@ -53,16 +53,28 @@ public class PerguntaController extends PrimaryIndexCRUD<Pergunta, pcvDireto> {
         return idPergunta;
     }
 
-    public List<Pergunta> readAll(int idUsuario)
-            throws InstantiationException, IllegalAccessException, InvocationTargetException, Exception {
-        List<Pergunta> objetos = new ArrayList<>();
+    public List<Pergunta> readAll(int idUsuario) throws InstantiationException, IllegalAccessException, 
+            InvocationTargetException, Exception {
+
+        List<Pergunta> perguntas = new ArrayList<>();
 
         int[] values = arvoreB.read(idUsuario);
 
         for (int i = 0; i < values.length; i++) {
-            objetos.add(read(values[i]));
+            perguntas.add(read(values[i]));
         }
 
-        return objetos;
+        return perguntas;
+    }
+
+    public boolean archiving(int idPergunta) throws InstantiationException, 
+        IllegalAccessException, InvocationTargetException, Exception {
+
+        boolean success = false;
+        Pergunta pergunta = super.read(idPergunta);
+        pergunta.setAtiva(false);
+        success = super.update(pergunta);
+
+        return success;
     }
 }

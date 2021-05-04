@@ -105,7 +105,6 @@ public class InterfaceUsuario {
 						break;
 
 					case 4:
-						ListarPerguntas();
 						ArquivarPergunta();
 						break;
 					case 0:
@@ -232,25 +231,32 @@ public class InterfaceUsuario {
 		return isLogin;
 	}
 
-	
-	public void ArquivarPergunta() throws InstantiationException, IllegalAccessException, 
-		InvocationTargetException, Exception {
+	public void ArquivarPergunta()
+			throws InstantiationException, IllegalAccessException, InvocationTargetException, Exception {
 		ler = new Scanner(System.in);
+		List<Pergunta> perguntas = ListarPerguntas();
 		System.out.println("| Informe o ID da pergunta a ser arquivada: ");
 		System.out.println("| 0 - Sair");
 		System.out.print("\t-> ");
-		int option = Integer.parseInt(ler.nextLine());
-		int idPergunta = option;
-		Pergunta pergunta = perguntaController.read(idPergunta);
+		int arrayIndex = Integer.parseInt(ler.nextLine()) - 1;
 
-		if(option != 0 && pergunta.isAtiva() == true) {
-			boolean success = false;
-			
-			if(pergunta.getIdUsuario() == idUsuario) {
-				success = perguntaController.archiving(idPergunta);
-			}
-			
-			if(success) {
+		Pergunta pergunta = null;
+
+		try {
+			pergunta = perguntas.get(arrayIndex);
+		} catch (Exception e) {
+			return;
+		}
+    
+     boolean success = false;
+		if (pergunta != null && pergunta.isAtiva() == true) {
+			int idPergunta = pergunta.getID();
+      
+      if(pergunta.getIdUsuario() == idUsuario) {
+			  boolean success = perguntaController.archiving(idPergunta);
+      }
+      
+			if (success) {
 				System.out.println("| Pergunta arquivada com sucesso!");
 			} else {
 				System.out.println("| Ocorreu algum erro ao arquivar a pergunta!");
@@ -258,34 +264,38 @@ public class InterfaceUsuario {
 		}
 	}
 
-	public void ListarPerguntas()
+	public List<Pergunta> ListarPerguntas()
+
 			throws InstantiationException, IllegalAccessException, InvocationTargetException, Exception {
 		System.out.println("MINHAS PERGUNTAS");
 		List<Pergunta> minhasPerguntas = perguntaController.readAll(idUsuario);
 
 		for (Pergunta pergunta : minhasPerguntas) {
 			String isArquivado = (pergunta.isAtiva() ? "" : "(Arquivada)");
-			System.out.println(String.format("\n%d. %s", pergunta.getID(), isArquivado));
+			System.out.println(String.format("\n%d. %s", minhasPerguntas.indexOf(pergunta) + 1, isArquivado));
 			System.out.println(pergunta.getCriacaoString());
 			System.out.println(pergunta.getPergunta());
 		}
-		// System.out.println("\n\nPressione qualquer tecla para continuar...");
-		// ler.nextLine();
 
-		return;
+		return minhasPerguntas;
 	}
 
 	public void AlterarPergunta()
 			throws InstantiationException, IllegalAccessException, InvocationTargetException, Exception {
-		ListarPerguntas();
+		List<Pergunta> perguntas = ListarPerguntas();
 		System.out.println("| Escolha o ID da pergunta:");
-		int id = Integer.parseInt(ler.nextLine());
-		if (id == 0) {
-			// id 0 return ao menu
+
+		int arrayIndex = Integer.parseInt(ler.nextLine()) - 1;
+		if (arrayIndex == -1) {
 			return;
 		}
-		// imprimir a pergunta na tela
-		Pergunta pergunta = perguntaController.read(id);
+
+		Pergunta pergunta = null;
+		try {
+			pergunta = perguntas.get(arrayIndex);
+		} catch (Exception e) {
+			return;
+		}
 
 		// Assegurar a scopo de pergunta
 		if (pergunta.getIdUsuario() == idUsuario) {

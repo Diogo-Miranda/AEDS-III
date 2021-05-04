@@ -248,19 +248,19 @@ public class InterfaceUsuario {
 			return;
 		}
     
-     boolean success = false;
+		boolean success = false;
 		if (pergunta != null && pergunta.isAtiva() == true) {
 			int idPergunta = pergunta.getID();
-      
-      if(pergunta.getIdUsuario() == idUsuario) {
-			  boolean success = perguntaController.archiving(idPergunta);
-      }
-      
-			if (success) {
-				System.out.println("| Pergunta arquivada com sucesso!");
-			} else {
-				System.out.println("| Ocorreu algum erro ao arquivar a pergunta!");
+		
+			if(pergunta.getIdUsuario() == idUsuario) {
+				success = perguntaController.archiving(idPergunta);
 			}
+		}
+		
+		if (success) {
+			System.out.println("| Pergunta arquivada com sucesso!");
+		} else {
+			System.out.println("| Ocorreu algum erro ao arquivar a pergunta!");
 		}
 	}
 

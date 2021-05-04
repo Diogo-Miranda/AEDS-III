@@ -92,6 +92,9 @@ public class InterfaceUsuario {
 					case 1:
 						// Listar perguntas
 						ListarPerguntas();
+
+						System.out.println("|   Pressione qualquer tecla para continuar...");
+						ler.nextLine();
 						break;
 					case 2:
 						// Incluir pergunta
@@ -105,6 +108,7 @@ public class InterfaceUsuario {
 						// O método retornará o ID da nova pergunta;
 						// Incluir o par ID do usuário e ID da pergunta na árvore B+ do relacionamento.
 						IncluirPergunta();
+
 						break;
 					case 3:
 						// Alterar pergunta
@@ -124,6 +128,7 @@ public class InterfaceUsuario {
 						// Alterar os dados da pergunta por meio do método update() do CRUD;
 						// Apresentar mensagem de confirmação da alteração;
 						// Voltar ao menu de perguntas.
+						AlterarPergunta();
 						break;
 
 					case 4:
@@ -179,13 +184,13 @@ public class InterfaceUsuario {
 			}
 
 			switch (entrada) {
-			case "1":
-				isLogin = Login();
-				break;
-			case "2":
-				isLogin = Cadastro();
-				break;
-			case "0":
+				case "1":
+					isLogin = Login();
+					break;
+				case "2":
+					isLogin = Cadastro();
+					break;
+				case "0":
 					System.out.println("| Fim do programa.");
 					break;
 
@@ -200,28 +205,28 @@ public class InterfaceUsuario {
 	}
 
 	public void ImprimirMenuPrincipalPerguntas() {
-		System.out.println("\nPERGUNTAS 1.0");
-		System.out.println("=============");
+		System.out.println("\n----------------\nPerguntas 1.0\n----------------\n");
 		System.out.println("INÍCIO");
-		System.out.println("1) Criação de perguntas");
-		System.out.println("2) Consultar/responder perguntas");
-		System.out.println("3) Notificações: 0");
-		System.out.println("0) Sair");
+		System.out.println("\t1) Criação de perguntas");
+		System.out.println("\t2) Consultar/responder perguntas");
+		System.out.println("\t3) Notificações: 0");
+		System.out.println("\t0) Sair");
+		System.out.print("\t-> ");
 	}
 
 	public void ImprimirMenuCriacaoPerguntas() {
-		System.out.println("\nPERGUNTAS 1.0");
-		System.out.println("=============");
+		System.out.println("\n----------------\nPerguntas 1.0\n----------------\n");
 		System.out.println("INÍCIO > CRIAÇÃO DE PERGUNTAS");
-		System.out.println("1) Listar");
-		System.out.println("2) Incluir");
-		System.out.println("3) Alterar");
-		System.out.println("4) Arquivar");
-		System.out.println("0) Retornar ao menu anterior");
+		System.out.println("\t1) Listar");
+		System.out.println("\t2) Incluir");
+		System.out.println("\t3) Alterar");
+		System.out.println("\t4) Arquivar");
+		System.out.println("\t0) Retornar ao menu anterior");
+		System.out.print("\t-> ");
 	}
 
 	public void ImprimirMenu() {
-		System.out.println("\n=============\nMenu\n=============\n");
+		System.out.println("\n----------------\nMenu\n----------------\n");
 		System.out.println("| Acesso:\n");
 		System.out.println("\t1 - Acesso ao Sistema");
 		System.out.println("\t2 - Novo usuário(primeiro acesso)\n");
@@ -266,23 +271,30 @@ public class InterfaceUsuario {
 		} else {
 			System.out.println("| ERRO: Email não cadastrado.");
 		}
-		
+
 		return isLogin;
 	}
+
 	
 	public void ArquivarPergunta() throws InstantiationException, IllegalAccessException, 
 		InvocationTargetException, Exception {
 		ler = new Scanner(System.in);
-		System.out.println("Informe o ID da pergunta a ser arquivada: ");
-		int idPergunta = Integer.parseInt(ler.nextLine());
-		boolean success = perguntaController.archiving(idPergunta);
-		if(success) {
-			System.out.println("Pergunta arquivada com sucesso!");
-		} else {
-			System.out.println("Ocorreu algum erro ao arquivar a pergunta!");
+		System.out.println("| Informe o ID da pergunta a ser arquivada: ");
+		System.out.println("| 0 - Sair");
+		System.out.print("\t-> ");
+		int option = Integer.parseInt(ler.nextLine());
+
+		if(option == 0) {
+			int idPergunta = option;
+			boolean success = perguntaController.archiving(idPergunta);
+
+			if(success) {
+				System.out.println("| Pergunta arquivada com sucesso!");
+			} else {
+				System.out.println("| Ocorreu algum erro ao arquivar a pergunta!");
+			}
 		}
 	}
-
 	public void ListarPerguntas()
 			throws InstantiationException, IllegalAccessException, InvocationTargetException, Exception {
 		System.out.println("MINHAS PERGUNTAS");
@@ -294,10 +306,48 @@ public class InterfaceUsuario {
 			System.out.println(pergunta.getCriacaoString());
 			System.out.println(pergunta.getPergunta());
 		}
-
 		// System.out.println("\n\nPressione qualquer tecla para continuar...");
 		// ler.nextLine();
 
+		return;
+	}
+
+	public void AlterarPergunta()
+			throws InstantiationException, IllegalAccessException, InvocationTargetException, Exception {
+		ListarPerguntas();
+		System.out.println("| Escolha o ID da pergunta:");
+		int id = Integer.parseInt(ler.nextLine());
+		if (id == 0) {
+			// id 0 return ao menu
+			return;
+		}
+		// imprimir a pergunta na tela
+		Pergunta pergunta = perguntaController.read(id);
+
+		// Assegurar a scopo de pergunta
+		if (pergunta.getIdUsuario() == idUsuario) {
+
+			System.out.println("| Insira sua pergunta: ");
+
+			String conteudoPergunta = ler.nextLine();
+
+			if (conteudoPergunta.equals("")) {
+				return;
+			}
+
+			pergunta.setPergunta(conteudoPergunta);
+
+			System.out.println("| Deseja confirma alteração(S/N): ");
+
+			String validacao = ler.nextLine().toLowerCase();
+
+			if (validacao.equals("s")) {
+				perguntaController.update(pergunta);
+				System.out.println("| Pergunta alterada com sucesso!");
+			}
+		}
+
+		return;
 	}
 
 	public void IncluirPergunta() throws Exception {

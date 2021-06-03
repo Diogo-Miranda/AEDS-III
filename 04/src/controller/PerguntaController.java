@@ -23,7 +23,9 @@ public class PerguntaController extends PrimaryIndexCRUD<Pergunta, pcvDireto> {
             throws FileNotFoundException, NoSuchMethodException, SecurityException, IOException, Exception {
         super(Pergunta.class.getConstructor(), pcvDireto.class.getConstructor(),
                 pcvDireto.class.getConstructor(int.class, long.class), String.format("%s%s", file, dbFileName));
-        arvoreB = new ArvoreBMais_ChaveComposta_Int_Int(arvoreOrdem, arvoreFile);
+
+        String arvorePath = String.format("%s%s", file, arvoreFile);
+        arvoreB = new ArvoreBMais_ChaveComposta_Int_Int(arvoreOrdem, arvorePath);
 
         String nomeArquivoDicionario = String.format("%sdicionario.listaInvertida.db", file);
         String nomeArquivoDeBlocos = String.format("%sblocos.listaInvertida.db", file);

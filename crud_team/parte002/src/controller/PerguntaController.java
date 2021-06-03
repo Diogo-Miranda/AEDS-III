@@ -64,6 +64,8 @@ public class PerguntaController extends PrimaryIndexCRUD<Pergunta, pcvDireto> {
 
         for (int i = 0; i < values.length; i++) {
             perguntas.add(read(values[i]));
+
+            
         }
 
         return perguntas;

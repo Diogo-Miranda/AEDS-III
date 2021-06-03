@@ -1,8 +1,11 @@
 package src.view;
 
+import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Scanner;
 import java.io.File;
+import java.io.IOException;
 import java.lang.reflect.InvocationTargetException;
 
 import src.model.*;
@@ -10,7 +13,7 @@ import src.controller.*;
 
 public class InterfaceUsuario {
 
-	public static final String DATA_FOLDER = "./src/model/dados/";
+	public static final String DATA_FOLDER = "./data/";
 
 	private Scanner ler;
 	private String nome;
@@ -29,13 +32,11 @@ public class InterfaceUsuario {
 
 	public InterfaceUsuario() throws Exception {
 		arqUsuario = new PrimaryIndexCRUD<Usuario, pcvDireto>(Usuario.class.getConstructor(),
-				pcvDireto.class.getConstructor(), pcvDireto.class.getConstructor(int.class, long.class),
-				DATA_FOLDER + "usuario.db");
+				pcvDireto.class.getConstructor(), pcvDireto.class.getConstructor(int.class, long.class), DATA_FOLDER);
 		secondaryIndex = new SecondaryIndexCRUD<pcvUsuario>(pcvUsuario.class.getConstructor(),
-				pcvUsuario.class.getConstructor(String.class, int.class));
+				pcvUsuario.class.getConstructor(String.class, int.class), DATA_FOLDER);
 
-		perguntaController = new PerguntaController(DATA_FOLDER + "pergunta.db", 100,
-				DATA_FOLDER + "perguntaArvore.db");
+		perguntaController = new PerguntaController(DATA_FOLDER, "pergunta.db", 100, "perguntaArvore.db");
 	}
 
 	public void MenuPrincipalPerguntas() {
@@ -56,7 +57,7 @@ public class InterfaceUsuario {
 						break;
 					case 2:
 						// Chamar interface de consultar/responder perguntas
-						System.out.println("Consultando...");
+						MenuPesquisaPerguntas();
 
 						break;
 					case 3:
@@ -76,6 +77,144 @@ public class InterfaceUsuario {
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
+	}
+
+	public void PrintarPerguntaParaResposta(Pergunta perguntaEscolhida)
+			throws InstantiationException, IllegalAccessException, InvocationTargetException, IOException, Exception {
+		Usuario autor = arqUsuario.read(perguntaEscolhida.getIdUsuario());
+
+		System.out.println("+---------------------------------------------------------------------+");
+		System.out.println("| " + perguntaEscolhida.getPergunta() + " |");
+		System.out.println("+---------------------------------------------------------------------+");
+		System.out.println("Criada em " + perguntaEscolhida.getCriacaoString() + " por " + autor.getNome());
+		System.out.println("Palavras chave: " + perguntaEscolhida.getPalavrasChave());
+		System.out.println("Nota: " + perguntaEscolhida.getNota());
+
+		System.out.println("RESPOSTAS");
+		System.out.println("---------");
+	}
+
+	public void MenuVisualizacaoPergunta(Pergunta perguntaEscolhida)
+			throws InstantiationException, IllegalAccessException, InvocationTargetException, IOException, Exception {
+		PrintarPerguntaParaResposta(perguntaEscolhida);
+		// TODO respostas das perguntas
+
+		System.out.println("\t1) Responder");
+		System.out.println("\t2) Avaliar\n");
+		System.out.println("\t0) Retornar");
+
+		ler = new Scanner(System.in);
+
+		String line = "";
+		int opcao = 0;
+		try {
+			line = ler.nextLine();
+			opcao = Integer.parseInt(line);
+			switch (opcao) {
+				case 1:
+					// TODO responder perguntas
+					break;
+				case 2:
+					// TODO avaliar perguntas
+					break;
+				case 0:
+					MenuCriacaoPerguntas();
+					break;
+			}
+		} catch (NumberFormatException nfe) {
+			nfe.printStackTrace();
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+	}
+
+	public void MenuSelecaoPerguntas(ArrayList<Pergunta> perguntas) {
+		// Criar um hash para perguntas
+		HashMap<Integer, Pergunta> perguntasMap = new HashMap<>();
+
+		ler = new Scanner(System.in);
+
+		int posicao = 1;
+		for (Pergunta pergunta : perguntas) {
+			System.out.println(pergunta.toString(posicao));
+			perguntasMap.put(posicao++, pergunta);
+		}
+
+		System.out.println("\tInforme o número da pergunta que deseja visitar");
+		System.out.println("\tInforme \"0\" para sair");
+		System.out.print("\t-> ");
+
+		String line = "";
+		int idEscolhido = 0;
+		try {
+			line = ler.nextLine();
+			idEscolhido = Integer.parseInt(line);
+			Pergunta perguntaEscolhida = perguntasMap.get(idEscolhido);
+			MenuVisualizacaoPergunta(perguntaEscolhida);
+		} catch (NumberFormatException nfe) {
+			nfe.printStackTrace();
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+	}
+
+	public void MenuPesquisaPerguntas() {
+		ler = new Scanner(System.in);
+
+		String line = "";
+		try {
+			do {
+				ImprimirMenuPesquisaPalavrasChave();
+				line = ler.nextLine();
+				if (!line.equals("0")) {
+					ArrayList<Integer> listOfIds = lerIdsPorPalavrasChave(line);
+					ArrayList<Pergunta> perguntas = lerPerguntasPorId(listOfIds);
+					if (!perguntas.isEmpty()) {
+						MenuSelecaoPerguntas(perguntas);
+					} else {
+						System.out.println("Nenhuma pergunta encontrada");
+					}
+				}
+
+			} while (!line.equals("0"));
+
+		} catch (NumberFormatException nfe) {
+			nfe.printStackTrace();
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+	}
+
+	public ArrayList<Pergunta> lerPerguntasPorId(ArrayList<Integer> listOfIds)
+			throws InstantiationException, IllegalAccessException, InvocationTargetException, IOException, Exception {
+		ArrayList<Pergunta> perguntas = new ArrayList<>();
+		for (Integer id : listOfIds) {
+			Pergunta pergunta = perguntaController.read(id);
+			if (pergunta != null) {
+				perguntas.add(pergunta);
+			}
+		}
+
+		return perguntas;
+	}
+
+	public ArrayList<Integer> lerIdsPorPalavrasChave(String palavrasChave) throws Exception {
+		ArrayList<Integer> listOfIds = new ArrayList<>();
+
+		String[] palavrasChaveVector = palavrasChave.split(";");
+		// for(int i = 0; i < palavrasChaveVector.length; i++) {
+		// System.out.println(palavrasChaveVector[i]);
+		// }
+		for (int i = 0; i < palavrasChaveVector.length; i++) {
+			// System.out.println(palavrasChaveVector[i]);
+			int[] setOfIds = perguntaController.readPorPalavraChave(palavrasChaveVector[i]);
+			for (int j = 0; j < setOfIds.length; j++) {
+				// System.out.println(setOfIds[j]);
+				listOfIds.add(setOfIds[j]);
+			}
+		}
+		// System.out.println(listOfIds.toString());
+		return listOfIds;
 	}
 
 	public void MenuCriacaoPerguntas() {
@@ -195,6 +334,16 @@ public class InterfaceUsuario {
 		new File(DATA_FOLDER + "usuarios.hash_d.db").delete();
 	}
 
+	public void ImprimirMenuPesquisaPalavrasChave() {
+		System.out.println("\n----------------\nPerguntas 1.0\n----------------\n");
+		System.out.println("INÍCIO > PERGUNTAS");
+		System.out.println("\tBusque as perguntas por palavra chave separadas por ponto e vírgula");
+		System.out.println("\tEx: política;Brasil;eleições");
+		System.out.println("\tPara cancelar entre com \"0\"");
+		System.out.println("\tPalavras chave:");
+		System.out.print("\t-> ");
+	}
+
 	public boolean Login() throws Exception {
 		System.out.println("------------------------------");
 		System.out.println("LOGIN");
@@ -207,7 +356,7 @@ public class InterfaceUsuario {
 
 		boolean isLogin = false;
 
-		// Buscar o ID do usuário usando o índice secundário externo (de e-mails);
+		// Buscar o número do usuário usando o índice secundário externo (de e-mails);
 		int id = secondaryIndex.read(email);
 		if (id != -1) {
 			Usuario user = arqUsuario.read(id);
@@ -235,7 +384,7 @@ public class InterfaceUsuario {
 			throws InstantiationException, IllegalAccessException, InvocationTargetException, Exception {
 		ler = new Scanner(System.in);
 		List<Pergunta> perguntas = ListarPerguntas();
-		System.out.println("| Informe o ID da pergunta a ser arquivada: ");
+		System.out.println("| Informe o número da pergunta a ser arquivada: ");
 		System.out.println("| 0 - Sair");
 		System.out.print("\t-> ");
 		int arrayIndex = Integer.parseInt(ler.nextLine()) - 1;
@@ -256,6 +405,7 @@ public class InterfaceUsuario {
 				success = perguntaController.archiving(idPergunta);
 			}
 		}
+
 		if (success) {
 			System.out.println("| Pergunta arquivada com sucesso!");
 		} else {
@@ -270,10 +420,7 @@ public class InterfaceUsuario {
 		List<Pergunta> minhasPerguntas = perguntaController.readAll(idUsuario);
 
 		for (Pergunta pergunta : minhasPerguntas) {
-			String isArquivado = (pergunta.isAtiva() ? "" : "(Arquivada)");
-			System.out.println(String.format("\n%d. %s", minhasPerguntas.indexOf(pergunta) + 1, isArquivado));
-			System.out.println(pergunta.getCriacaoString());
-			System.out.println(pergunta.getPergunta());
+			System.out.println(pergunta.toString());
 		}
 
 		return minhasPerguntas;
@@ -282,9 +429,10 @@ public class InterfaceUsuario {
 	public void AlterarPergunta()
 			throws InstantiationException, IllegalAccessException, InvocationTargetException, Exception {
 		List<Pergunta> perguntas = ListarPerguntas();
-		System.out.println("| Escolha o ID da pergunta:");
+		System.out.println("| Escolha o número da pergunta:");
 
 		int arrayIndex = Integer.parseInt(ler.nextLine()) - 1;
+
 		if (arrayIndex == -1) {
 			return;
 		}
@@ -297,24 +445,28 @@ public class InterfaceUsuario {
 		}
 
 		// Assegurar a scopo de pergunta
-		if (pergunta.getIdUsuario() == idUsuario) {
-
+		if (pergunta.getIdUsuario() == idUsuario && pergunta.isAtiva()) {
+			Pergunta perguntaAntiga = pergunta.clone();
 			System.out.println("| Insira sua pergunta: ");
-
 			String conteudoPergunta = ler.nextLine();
 
 			if (conteudoPergunta.equals("")) {
 				return;
 			}
 
+			System.out.println("| Insira as novas palavras chave: ");
+			String palavrasChave = ler.nextLine();
+
 			pergunta.setPergunta(conteudoPergunta);
+			pergunta.setPalavrasChave(palavrasChave);
 
 			System.out.println("| Deseja confirma alteração(S/N): ");
 
 			String validacao = ler.nextLine().toLowerCase();
 
 			if (validacao.equals("s")) {
-				perguntaController.update(pergunta);
+				perguntaController.update(pergunta, perguntaAntiga);
+
 				System.out.println("| Pergunta alterada com sucesso!");
 			}
 		}
@@ -327,6 +479,11 @@ public class InterfaceUsuario {
 		System.out.println("| Insira sua pergunta:");
 		System.out.print("\t-> ");
 		Pergunta pergunta = new Pergunta(idUsuario, ler.nextLine());
+
+		System.out.println("| Insira algumas palavras chaves para essa pergunta:");
+		System.out.print("\t-> ");
+		String palavrasChaves = ler.nextLine();
+		pergunta.setPalavrasChave(palavrasChaves);
 
 		if (pergunta.getPergunta().isEmpty())
 			return;

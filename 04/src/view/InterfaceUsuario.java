@@ -215,8 +215,20 @@ public class InterfaceUsuario {
 		System.out.println("\n\t 0) Retornar ao menu anterior");
 	}
 
-	public void ListarRespostas(int idPergunta) {
-		// TODO listar Respostas
+	public List<Resposta> ListarRespostas(int idPergunta)
+			throws InstantiationException, IllegalAccessException, InvocationTargetException, Exception {
+
+		List<Resposta> respostas = respostaController.readAllRespostaPergunta(idPergunta);
+
+		for (int i = 0; i < respostas.size(); i++) {
+			Resposta resposta = respostas.get(i);
+
+			String nomeUsusario = arqUsuario.read(resposta.getIdUsuario()).getNome();
+
+			System.out.println(resposta.toString(i + 1, nomeUsusario));
+		}
+
+		return respostas;
 	}
 
 	public int IncluirResposta(int idPergunta) throws InstantiationException, IllegalAccessException,
@@ -229,11 +241,20 @@ public class InterfaceUsuario {
 			return -1;
 		}
 
+		System.out.println("| Confirmar resposta? (S/N)");
+		System.out.print("\t-> ");
+		String confirmar = ler.nextLine();
+
+		if (confirmar.toLowerCase() == "n") {
+			return -1;
+		}
+
 		Resposta objResposta = new Resposta(idPergunta, this.idUsuario, resposta);
 		int id = respostaController.create(objResposta);
 		objResposta.setID(id);
 		System.out.println("Resposta criada: " + id);
 		System.out.println("Resposta : " + objResposta.toString());
+		System.out.println(String.format("Pergunta id:%d respondida", idPergunta));
 
 		return id;
 

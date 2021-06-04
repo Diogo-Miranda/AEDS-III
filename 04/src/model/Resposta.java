@@ -155,4 +155,11 @@ public class Resposta implements Registro {
                 this.getNota(), this.isAtiva());
 
     }
+
+    public String toString(int id, String nomeUsuario) {
+
+        return String.format("\n%d. \n%s \nRespondido em %s por %s", id, this.getResposta(), getCriacaoString(),
+                nomeUsuario);
+
+    }
 }

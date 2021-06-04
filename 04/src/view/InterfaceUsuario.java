@@ -303,9 +303,7 @@ public class InterfaceUsuario {
 		Resposta objResposta = new Resposta(idPergunta, this.idUsuario, resposta);
 		int id = respostaController.create(objResposta);
 		objResposta.setID(id);
-		System.out.println("Resposta criada: " + id);
-		System.out.println("Resposta : " + objResposta.toString());
-		System.out.println(String.format("Pergunta id:%d respondida", idPergunta));
+		System.out.println("Resposta criada ");
 
 		return id;
 

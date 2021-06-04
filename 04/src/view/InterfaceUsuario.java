@@ -22,6 +22,7 @@ public class InterfaceUsuario {
 	private PrimaryIndexCRUD<Usuario, pcvDireto> arqUsuario;
 	private SecondaryIndexCRUD<pcvUsuario> secondaryIndex;
 	private PerguntaController perguntaController;
+	private RespostaController respostaController;
 
 	private String entrada;
 	private boolean forcarEntrada = false;
@@ -29,6 +30,7 @@ public class InterfaceUsuario {
 	private String confirmar;
 
 	private int idUsuario = -1;
+	private int idPergunta = -1; // pergunta selecionada
 
 	public InterfaceUsuario() throws Exception {
 		arqUsuario = new PrimaryIndexCRUD<Usuario, pcvDireto>(Usuario.class.getConstructor(),
@@ -37,6 +39,7 @@ public class InterfaceUsuario {
 				pcvUsuario.class.getConstructor(String.class, int.class), DATA_FOLDER);
 
 		perguntaController = new PerguntaController(DATA_FOLDER, "pergunta.db", 100, "perguntaArvore.db");
+		respostaController = new RespostaController(DATA_FOLDER, "resposta.db", 100);
 	}
 
 	public void MenuPrincipalPerguntas() {
@@ -65,7 +68,7 @@ public class InterfaceUsuario {
 						break;
 					case 0:
 						System.out.println("Deslogando...");
-						idUsuario = -1;
+						Logout();
 						break;
 					default:
 						System.out.println("Opçao inválida");
@@ -79,13 +82,35 @@ public class InterfaceUsuario {
 		}
 	}
 
+	public void PrintBox(String content, int extraSpaces) {
+		int size = content.length() + extraSpaces;
+
+		System.out.print("+--");
+		for (int i = 0; i < size; i++) {
+			System.out.print("-");
+		}
+		System.out.print("+\n");
+
+		String contentBox = "| " + content;
+		System.out.print(contentBox);
+		for (int i = 0; i < (size - contentBox.length()) * 2; i++) {
+			System.out.print(" ");
+		}
+		System.out.print("|\n");
+
+		System.out.print("+--");
+		for (int i = 0; i < size; i++) {
+			System.out.print("-");
+		}
+		System.out.print("+\n");
+	}
+
 	public void PrintarPerguntaParaResposta(Pergunta perguntaEscolhida)
 			throws InstantiationException, IllegalAccessException, InvocationTargetException, IOException, Exception {
 		Usuario autor = arqUsuario.read(perguntaEscolhida.getIdUsuario());
 
-		System.out.println("+---------------------------------------------------------------------+");
-		System.out.println("| " + perguntaEscolhida.getPergunta() + " |");
-		System.out.println("+---------------------------------------------------------------------+");
+		PrintBox(perguntaEscolhida.getPergunta(), 5);
+
 		System.out.println("Criada em " + perguntaEscolhida.getCriacaoString() + " por " + autor.getNome());
 		System.out.println("Palavras chave: " + perguntaEscolhida.getPalavrasChave());
 		System.out.println("Nota: " + perguntaEscolhida.getNota());
@@ -96,12 +121,54 @@ public class InterfaceUsuario {
 
 	public void MenuVisualizacaoPergunta(Pergunta perguntaEscolhida)
 			throws InstantiationException, IllegalAccessException, InvocationTargetException, IOException, Exception {
-		PrintarPerguntaParaResposta(perguntaEscolhida);
-		// TODO respostas das perguntas
+		if (perguntaEscolhida != null) {
 
-		System.out.println("\t1) Responder");
-		System.out.println("\t2) Avaliar\n");
-		System.out.println("\t0) Retornar");
+			idPergunta = perguntaEscolhida.getID();
+
+			PrintarPerguntaParaResposta(perguntaEscolhida);
+
+			ImprimirMenuResponder();
+
+			ler = new Scanner(System.in);
+
+			String line = "";
+			int opcao = 0;
+			try {
+				line = ler.nextLine();
+				opcao = Integer.parseInt(line);
+				switch (opcao) {
+					case 1:
+						MenuRespostas(perguntaEscolhida);
+						break;
+					case 2:
+						// TODO Avaliar Resposta
+						break;
+
+					case 0:
+						MenuCriacaoPerguntas();
+						break;
+				}
+			} catch (NumberFormatException nfe) {
+				nfe.printStackTrace();
+			} catch (Exception e) {
+				e.printStackTrace();
+			}
+		}
+
+	}
+
+	public void ImprimirMenuResponder() {
+		System.out.println("\t 1) Responder");
+		System.out.println("\t 2) Avaliar");
+		System.out.println("\n\t 0) Retornar");
+	}
+
+	public void MenuRespostas(Pergunta perguntaEscolhida)
+			throws InstantiationException, IllegalAccessException, InvocationTargetException, IOException, Exception {
+
+		PrintarPerguntaParaResposta(perguntaEscolhida);
+
+		ImprimirMenuRespostas();
 
 		ler = new Scanner(System.in);
 
@@ -112,13 +179,25 @@ public class InterfaceUsuario {
 			opcao = Integer.parseInt(line);
 			switch (opcao) {
 				case 1:
-					// TODO responder perguntas
+					ListarRespostas(idPergunta);
 					break;
 				case 2:
-					// TODO avaliar perguntas
+					int idResposta = IncluirResposta(idPergunta);
+					if (idResposta == -1) {
+						MenuRespostas(perguntaEscolhida);
+					}
+					break;
+
+				case 3:
+					AlterarResposta(idPergunta);
+					break;
+
+				case 4:
+					ArquivarResposta(idPergunta);
 					break;
 				case 0:
-					MenuCriacaoPerguntas();
+					// TODO verificar se esta correto
+					MenuVisualizacaoPergunta(perguntaEscolhida);
 					break;
 			}
 		} catch (NumberFormatException nfe) {
@@ -126,6 +205,46 @@ public class InterfaceUsuario {
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
+	}
+
+	public void ImprimirMenuRespostas() {
+		System.out.println("\t 1) Listar suas respostas");
+		System.out.println("\t 2) Incluir uma resposta");
+		System.out.println("\t 3) Alterar uma resposta");
+		System.out.println("\t 4) Arquivar uma resposta");
+		System.out.println("\n\t 0) Retornar ao menu anterior");
+	}
+
+	public void ListarRespostas(int idPergunta) {
+		// TODO listar Respostas
+	}
+
+	public int IncluirResposta(int idPergunta) throws InstantiationException, IllegalAccessException,
+			IllegalArgumentException, InvocationTargetException, Exception {
+		System.out.println("| Insira sua resposta:");
+		System.out.print("\t-> ");
+		String resposta = ler.nextLine();
+
+		if (resposta == null || resposta.isEmpty()) {
+			return -1;
+		}
+
+		Resposta objResposta = new Resposta(idPergunta, this.idUsuario, resposta);
+		int id = respostaController.create(objResposta);
+		objResposta.setID(id);
+		System.out.println("Resposta criada: " + id);
+		System.out.println("Resposta : " + objResposta.toString());
+
+		return id;
+
+	}
+
+	public void AlterarResposta(int idPergunta) {
+		// TODO alterar Respostas
+	}
+
+	public void ArquivarResposta(int idPergunta) {
+		// TODO arquivar Respostas
 	}
 
 	public void MenuSelecaoPerguntas(ArrayList<Pergunta> perguntas) {
@@ -165,7 +284,7 @@ public class InterfaceUsuario {
 		try {
 			do {
 				ImprimirMenuPesquisaPalavrasChave();
-				line = ler.nextLine();
+				line = ler.nextLine().toLowerCase();
 				if (!line.equals("0")) {
 					ArrayList<Integer> listOfIds = lerIdsPorPalavrasChave(line);
 					ArrayList<Pergunta> perguntas = lerPerguntasPorId(listOfIds);
@@ -329,6 +448,7 @@ public class InterfaceUsuario {
 	}
 
 	public void DeleteDados() {
+		// TODO deletar tudo da pasta DATA_FOLDER
 		new File(DATA_FOLDER + "usuarios.db").delete();
 		new File(DATA_FOLDER + "usuarios.hash_c.db").delete();
 		new File(DATA_FOLDER + "usuarios.hash_d.db").delete();
@@ -380,6 +500,11 @@ public class InterfaceUsuario {
 		return isLogin;
 	}
 
+	public void Logout() {
+		idUsuario = -1;
+		idPergunta = -1;
+	}
+
 	public void ArquivarPergunta()
 			throws InstantiationException, IllegalAccessException, InvocationTargetException, Exception {
 		ler = new Scanner(System.in);
@@ -419,8 +544,8 @@ public class InterfaceUsuario {
 		System.out.println("MINHAS PERGUNTAS");
 		List<Pergunta> minhasPerguntas = perguntaController.readAll(idUsuario);
 
-		for (Pergunta pergunta : minhasPerguntas) {
-			System.out.println(pergunta.toString());
+		for (int i = 0; i < minhasPerguntas.size(); i++) {
+			System.out.println(minhasPerguntas.get(i).toString(i + 1));
 		}
 
 		return minhasPerguntas;

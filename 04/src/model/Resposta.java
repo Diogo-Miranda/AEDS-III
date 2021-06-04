@@ -5,6 +5,9 @@ import java.io.ByteArrayOutputStream;
 import java.io.DataInputStream;
 import java.io.DataOutputStream;
 import java.io.IOException;
+import java.text.DateFormat;
+import java.util.Calendar;
+import java.util.Date;
 
 import src.controller.hash.Registro;
 
@@ -17,6 +20,14 @@ public class Resposta implements Registro {
     private short nota;
     private String resposta;
     private boolean ativa;
+
+    public Resposta() {
+        this(-1, -1, -1, -1, (short) 0, "", false);
+    }
+
+    public Resposta(int idPergunta, int idUsuario, String resposta) {
+        this(-1, idPergunta, idUsuario, Calendar.getInstance().getTime().getTime(), (short) 0, resposta, true);
+    }
 
     public Resposta(int idResposta, int idPergunta, int idUsuario, long criacao, short nota, String resposta,
             boolean ativa) {
@@ -100,6 +111,11 @@ public class Resposta implements Registro {
         return "";
     }
 
+    public String getCriacaoString() {
+        Date criacaoDate = new Date(criacao);
+        return DateFormat.getInstance().format(criacaoDate);
+    }
+
     @Override
     public byte[] toByteArray() throws IOException {
 
@@ -128,7 +144,15 @@ public class Resposta implements Registro {
         this.nota = dis.readShort();
         this.resposta = dis.readUTF();
         this.ativa = dis.readBoolean();
-
     }
 
+    @Override
+    public String toString() {
+
+        return String.format(
+                "\nID: %d \nID Pergunta: %d \nID Usuario: %d \nCriação: %s \nResposta: %s\nNota: %d \nAtiva: %b",
+                this.getID(), this.getIdPergunta(), this.getIdUsuario(), getCriacaoString(), this.getResposta(),
+                this.getNota(), this.isAtiva());
+
+    }
 }

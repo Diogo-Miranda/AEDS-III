@@ -8,7 +8,6 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashSet;
 import java.util.List;
-import java.util.Scanner;
 
 import src.controller.arvorebplus.ArvoreBMais_ChaveComposta_Int_Int;
 import src.controller.listaInvertida.ListaInvertida;
@@ -36,7 +35,9 @@ public class PerguntaController extends PrimaryIndexCRUD<Pergunta, pcvDireto> {
             Constructor<pcvDireto> construtorIndexWithParams, String file, int arvoreOrdem, String arvoreFile)
             throws FileNotFoundException, IOException, Exception {
         super(construtor, construtorIndexWithoutParams, construtorIndexWithParams, file);
-        arvoreB = new ArvoreBMais_ChaveComposta_Int_Int(arvoreOrdem, arvoreFile);
+
+        String arvorePath = String.format("%s%s", file, arvoreFile);
+        arvoreB = new ArvoreBMais_ChaveComposta_Int_Int(arvoreOrdem, arvorePath);
     }
 
     @Override
@@ -74,6 +75,8 @@ public class PerguntaController extends PrimaryIndexCRUD<Pergunta, pcvDireto> {
 
     public boolean update(Pergunta perguntaNova, Pergunta perguntaAntiga) throws InstantiationException,
             IllegalAccessException, IllegalArgumentException, InvocationTargetException, IOException, Exception {
+
+        // TODO nao deveria comecar como falso
         boolean sucesso = true;
 
         sucesso = super.update(perguntaNova);
@@ -98,6 +101,10 @@ public class PerguntaController extends PrimaryIndexCRUD<Pergunta, pcvDireto> {
 
         for (String palavra : hashSetPalavrasChaveAntiga) {
             listaInvertida.delete(palavra, perguntaAntiga.getID());
+        }
+
+        for (String palavraChave : palavrasChave) {
+            listaInvertida.create(palavraChave, perguntaAntiga.getID());
         }
 
         return sucesso;

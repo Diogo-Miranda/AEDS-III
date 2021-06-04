@@ -313,6 +313,7 @@ public class InterfaceUsuario {
 
 	public void AlterarResposta(int idPergunta) throws InstantiationException, IllegalAccessException,
 			IllegalArgumentException, InvocationTargetException, IOException, Exception {
+
 		List<Resposta> respostas = ListarRespostas(idPergunta, isRespostaSameUsuarioAtiva(idUsuario));
 		System.out.println("| Escolha o número da resposta:");
 
@@ -357,8 +358,40 @@ public class InterfaceUsuario {
 		return;
 	}
 
-	public void ArquivarResposta(int idPergunta) {
-		// TODO arquivar Respostas
+	public void ArquivarResposta(int idPergunta)
+			throws InstantiationException, IllegalAccessException, InvocationTargetException, Exception {
+
+		List<Resposta> respostas = ListarRespostas(idPergunta, isRespostaSameUsuarioAtiva(idUsuario));
+		System.out.println("| Escolha o número da resposta:");
+
+		int arrayIndex = Integer.parseInt(ler.nextLine()) - 1;
+
+		if (arrayIndex == -1) {
+			return;
+		}
+
+		Resposta resposta = null;
+
+		try {
+			resposta = respostas.get(arrayIndex);
+		} catch (Exception e) {
+			return;
+		}
+
+		System.out.println(resposta.toString(arrayIndex + 1, getUsuario(resposta.getIdUsuario()).getNome()));
+
+		System.out.println("| Deseja arquivar (S/N): ");
+
+		String validacao = ler.nextLine().toLowerCase();
+
+		if (validacao.equals("s")) {
+			boolean archived = respostaController.archiving(resposta.getID());
+
+			System.out.println(String.format("| Resposta arquivada com %s!", (archived) ? "sucesso" : "falha"));
+
+		}
+
+		return;
 	}
 
 	public void MenuSelecaoPerguntas(ArrayList<Pergunta> perguntas)

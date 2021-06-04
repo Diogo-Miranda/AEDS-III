@@ -108,12 +108,18 @@ public class RespostaController extends PrimaryIndexCRUD<Resposta, pcvDireto> {
     public boolean archiving(int id)
             throws InstantiationException, IllegalAccessException, InvocationTargetException, Exception {
 
-        boolean success = false;
+        boolean successUpdate = false;
+        boolean successPergunta = false;
+        boolean successUsuario = false;
+
         Resposta resposta = super.read(id);
 
         resposta.setAtiva(false);
-        success = super.update(resposta);
+        successUpdate = super.update(resposta);
 
-        return success;
+        successPergunta = arvoreB_pergunta.delete(resposta.getIdPergunta(), resposta.getID());
+        successUsuario = arvoreB_usuario.delete(resposta.getIdUsuario(), resposta.getID());
+
+        return successUpdate && successPergunta && successUsuario;
     }
 }

@@ -247,12 +247,13 @@ public class InterfaceUsuario {
 		} catch (Exception e) {
 			return;
 		}
-    
+
+
 		boolean success = false;
 		if (pergunta != null && pergunta.isAtiva() == true) {
 			int idPergunta = pergunta.getID();
-		
-			if(pergunta.getIdUsuario() == idUsuario) {
+
+			if (pergunta.getIdUsuario() == idUsuario) {
 				success = perguntaController.archiving(idPergunta);
 			}
 		}

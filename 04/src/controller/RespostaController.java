@@ -68,8 +68,8 @@ public class RespostaController extends PrimaryIndexCRUD<Resposta, pcvDireto> {
         return id;
     }
 
-    public boolean update(Resposta respostaNova, Resposta respostaAntiga) throws InstantiationException,
-            IllegalAccessException, IllegalArgumentException, InvocationTargetException, IOException, Exception {
+    public boolean update(Resposta respostaNova) throws InstantiationException, IllegalAccessException,
+            IllegalArgumentException, InvocationTargetException, IOException, Exception {
         boolean sucesso = false;
 
         sucesso = super.update(respostaNova);

@@ -162,10 +162,10 @@ public class Pergunta implements Registro {
 
     }
 
-    public String toString(int posicao) {
+    public String toString(int posicao, String nomeUsuario) {
 
         return String.format(
-                "\nPosicao: %d \nID Usuario: %d \nCriação: %s \nPergunta: %s\nNota: %d \nAtiva: %b \nPalavras Chave: %s",
+                "\n%d. \nID Usuario: %d \nCriação: %s \nPergunta: %s\nNota: %d \nAtiva: %b \nPalavras Chave: %s",
                 posicao, this.getIdUsuario(), getCriacaoString(), this.getPergunta(), this.getNota(), this.isAtiva(),
                 this.getPalavrasChave());
 

@@ -1,13 +1,15 @@
 package src.view;
 
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Scanner;
+import java.util.function.Predicate;
+
 import java.io.File;
 import java.io.IOException;
 import java.lang.reflect.InvocationTargetException;
-
 import src.model.*;
 import src.controller.*;
 
@@ -40,6 +42,11 @@ public class InterfaceUsuario {
 
 		perguntaController = new PerguntaController(DATA_FOLDER, "pergunta.db", 100, "perguntaArvore.db");
 		respostaController = new RespostaController(DATA_FOLDER, "resposta.db", 100);
+	}
+
+	public Usuario getUsuario(int idUsuario)
+			throws InstantiationException, IllegalAccessException, InvocationTargetException, IOException, Exception {
+		return arqUsuario.read(idUsuario);
 	}
 
 	public void MenuPrincipalPerguntas() {
@@ -105,18 +112,29 @@ public class InterfaceUsuario {
 		System.out.print("+\n");
 	}
 
-	public void PrintarPerguntaParaResposta(Pergunta perguntaEscolhida)
+	public void PrintPergunta(Pergunta pergunta)
 			throws InstantiationException, IllegalAccessException, InvocationTargetException, IOException, Exception {
-		Usuario autor = arqUsuario.read(perguntaEscolhida.getIdUsuario());
 
-		PrintBox(perguntaEscolhida.getPergunta(), 5);
+		PrintBox(pergunta.getPergunta(), 5);
 
-		System.out.println("Criada em " + perguntaEscolhida.getCriacaoString() + " por " + autor.getNome());
-		System.out.println("Palavras chave: " + perguntaEscolhida.getPalavrasChave());
-		System.out.println("Nota: " + perguntaEscolhida.getNota());
+		Usuario autor = getUsuario(pergunta.getIdUsuario());
 
-		System.out.println("RESPOSTAS");
-		System.out.println("---------");
+		System.out.println("Criada em " + pergunta.getCriacaoString() + " por " + autor.getNome());
+		System.out.println("Palavras chave: " + pergunta.getPalavrasChave());
+		System.out.println("Nota: " + pergunta.getNota());
+	}
+
+	public void PrintPergunta(Pergunta pergunta, boolean showRespostas)
+			throws InstantiationException, IllegalAccessException, InvocationTargetException, IOException, Exception {
+
+		PrintPergunta(pergunta);
+
+		if (showRespostas) {
+			System.out.println("\nRESPOSTAS");
+			System.out.println("---------");
+			ListarRespostas(idPergunta);
+		}
+
 	}
 
 	public void MenuVisualizacaoPergunta(Pergunta perguntaEscolhida)
@@ -125,7 +143,7 @@ public class InterfaceUsuario {
 
 			idPergunta = perguntaEscolhida.getID();
 
-			PrintarPerguntaParaResposta(perguntaEscolhida);
+			PrintPergunta(perguntaEscolhida, true);
 
 			ImprimirMenuResponder();
 
@@ -166,7 +184,7 @@ public class InterfaceUsuario {
 	public void MenuRespostas(Pergunta perguntaEscolhida)
 			throws InstantiationException, IllegalAccessException, InvocationTargetException, IOException, Exception {
 
-		PrintarPerguntaParaResposta(perguntaEscolhida);
+		PrintPergunta(perguntaEscolhida, true);
 
 		ImprimirMenuRespostas();
 
@@ -179,7 +197,7 @@ public class InterfaceUsuario {
 			opcao = Integer.parseInt(line);
 			switch (opcao) {
 				case 1:
-					ListarRespostas(idPergunta);
+					ListarRespostas(idPergunta, isRespostaSameUsuario(idUsuario));
 					break;
 				case 2:
 					int idResposta = IncluirResposta(idPergunta);
@@ -231,6 +249,39 @@ public class InterfaceUsuario {
 		return respostas;
 	}
 
+	public static Predicate<Resposta> isRespostaSameUsuario(int idUsuario) {
+		return r -> r.getIdUsuario() == idUsuario;
+	}
+
+	public static Predicate<Resposta> isRespostaSameUsuarioAtiva(int idUsuario) {
+		return r -> r.getIdUsuario() == idUsuario && r.isAtiva() == true;
+	}
+
+	public List<Resposta> ListarRespostas(int idPergunta, Predicate<Resposta> predicate)
+			throws InstantiationException, IllegalAccessException, InvocationTargetException, Exception {
+
+		List<Resposta> respostas = respostaController.readAllRespostaPergunta(idPergunta);
+
+		int count = 1;
+
+		for (int i = 0; i < respostas.size(); i++) {
+
+			Resposta resposta = respostas.get(i);
+
+			if (predicate.test(resposta)) {
+
+				String nomeUsusario = getUsuario(idUsuario).getNome();
+				System.out.println(resposta.toString(count++, nomeUsusario));
+
+			} else {
+				respostas.remove(i--);
+			}
+
+		}
+
+		return respostas;
+	}
+
 	public int IncluirResposta(int idPergunta) throws InstantiationException, IllegalAccessException,
 			IllegalArgumentException, InvocationTargetException, Exception {
 		System.out.println("| Insira sua resposta:");
@@ -260,15 +311,58 @@ public class InterfaceUsuario {
 
 	}
 
-	public void AlterarResposta(int idPergunta) {
-		// TODO alterar Respostas
+	public void AlterarResposta(int idPergunta) throws InstantiationException, IllegalAccessException,
+			IllegalArgumentException, InvocationTargetException, IOException, Exception {
+		List<Resposta> respostas = ListarRespostas(idPergunta, isRespostaSameUsuarioAtiva(idUsuario));
+		System.out.println("| Escolha o número da resposta:");
+
+		int arrayIndex = Integer.parseInt(ler.nextLine()) - 1;
+
+		if (arrayIndex == -1) {
+			return;
+		}
+
+		Resposta resposta = null;
+
+		try {
+			resposta = respostas.get(arrayIndex);
+		} catch (Exception e) {
+			return;
+		}
+
+		System.out.println(resposta.toString(arrayIndex + 1, getUsuario(resposta.getIdUsuario()).getNome()));
+
+		System.out.println("| Insira sua resposta: ");
+
+		String conteudoResposta = ler.nextLine();
+		if (conteudoResposta.equals("")) {
+			return;
+		}
+
+		resposta.setResposta(conteudoResposta);
+		long now = Calendar.getInstance().getTime().getTime();
+		resposta.setCriacao(now);
+
+		System.out.println("| Deseja confirma alteração(S/N): ");
+
+		String validacao = ler.nextLine().toLowerCase();
+
+		if (validacao.equals("s")) {
+			respostaController.update(resposta);
+
+			System.out.println("| Resposta alterada com sucesso!");
+
+		}
+
+		return;
 	}
 
 	public void ArquivarResposta(int idPergunta) {
 		// TODO arquivar Respostas
 	}
 
-	public void MenuSelecaoPerguntas(ArrayList<Pergunta> perguntas) {
+	public void MenuSelecaoPerguntas(ArrayList<Pergunta> perguntas)
+			throws InstantiationException, IllegalAccessException, InvocationTargetException, IOException, Exception {
 		// Criar um hash para perguntas
 		HashMap<Integer, Pergunta> perguntasMap = new HashMap<>();
 
@@ -276,8 +370,11 @@ public class InterfaceUsuario {
 
 		int posicao = 1;
 		for (Pergunta pergunta : perguntas) {
-			System.out.println(pergunta.toString(posicao));
+			System.out.println(posicao + ".");
+			PrintPergunta(pergunta);
 			perguntasMap.put(posicao++, pergunta);
+			System.out.println("");
+
 		}
 
 		System.out.println("\tInforme o número da pergunta que deseja visitar");
@@ -565,8 +662,12 @@ public class InterfaceUsuario {
 		System.out.println("MINHAS PERGUNTAS");
 		List<Pergunta> minhasPerguntas = perguntaController.readAll(idUsuario);
 
-		for (int i = 0; i < minhasPerguntas.size(); i++) {
-			System.out.println(minhasPerguntas.get(i).toString(i + 1));
+		for (Pergunta pergunta : minhasPerguntas) {
+			int index = (minhasPerguntas.indexOf(pergunta) + 1);
+			System.out.println(index + ".");
+			PrintPergunta(pergunta);
+			System.out.println("");
+
 		}
 
 		return minhasPerguntas;

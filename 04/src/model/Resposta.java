@@ -146,6 +146,11 @@ public class Resposta implements Registro {
         this.ativa = dis.readBoolean();
     }
 
+    public Resposta clone() {
+        return new Resposta(getIdResposta(), getIdPergunta(), getIdUsuario(), getCriacao(), getNota(), getResposta(),
+                isAtiva());
+    }
+
     @Override
     public String toString() {
 
@@ -158,8 +163,8 @@ public class Resposta implements Registro {
 
     public String toString(int id, String nomeUsuario) {
 
-        return String.format("\n%d. \n%s \nRespondido em %s por %s", id, this.getResposta(), getCriacaoString(),
-                nomeUsuario);
+        return String.format("%d. \n%s \nRespondido em %s por %s\nNota: %d\n", id, this.getResposta(),
+                getCriacaoString(), nomeUsuario, getNota());
 
     }
 }

@@ -248,6 +248,7 @@ public class InterfaceUsuario {
 			return;
 		}
 
+
 		boolean success = false;
 		if (pergunta != null && pergunta.isAtiva() == true) {
 			int idPergunta = pergunta.getID();
@@ -256,6 +257,7 @@ public class InterfaceUsuario {
 				success = perguntaController.archiving(idPergunta);
 			}
 		}
+
 		if (success) {
 			System.out.println("| Pergunta arquivada com sucesso!");
 		} else {
@@ -297,7 +299,7 @@ public class InterfaceUsuario {
 		}
 
 		// Assegurar a scopo de pergunta
-		if (pergunta.getIdUsuario() == idUsuario) {
+		if (pergunta.getIdUsuario() == idUsuario && pergunta.isAtiva()) {
 
 			System.out.println("| Insira sua pergunta: ");
 
